@@ -6,7 +6,7 @@ async function getvectorydata(userQuery) {
         const collection = await chromaconnection.getCollection({
             name: "company-policy"
         })
-        const userQueryEmbedded = await textEmbedding(userQuery)
+        const userQueryEmbedded = await textEmbedding.textEmbeddingUserQuery(userQuery)
         const result = await collection.query({
             queryEmbeddings: [userQueryEmbedded],
             nResults: 2,

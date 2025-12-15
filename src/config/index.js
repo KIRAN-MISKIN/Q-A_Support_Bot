@@ -13,7 +13,9 @@ const config = {
     text_embedding_model:process.env.EMBEDDING_MODEL,
     llm_max_completion_token:process.env.LLM_MAX_COMPLETIONTOKEN,
     chunck_size:process.env.CHUNCK_SIZE,
-    chunck_overlap:process.env.CHUNCK_OVERLAP
+    chunck_overlap:process.env.CHUNCK_OVERLAP,
+    DB_COLLECTION: process.env.DB_COLLECTION,
+    NODE_ENV:process.env.NODE_ENV
 }
 
 export default config
