@@ -1,32 +1,39 @@
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
-import crawler from '../crawling/index.js'
 
-async function chunksData(text) {
-    const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 300,
-        chunkOverlap: 20,
-    });
-    const chunks = await textSplitter.splitText(text);
-    return chunks
+const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 300,
+    chunkOverlap: 20,
+});
+
+async function splitIntoChuncks(text) {
+    if (!text || typeof text !== 'string') return [];
+    return textSplitter.splitText(text);
 }
 
-async function getchuckData(url) {
-    const rawDocs = await crawler(url);
+async function getChunkData(rawDocs) {
+
     if (!Array.isArray(rawDocs) || rawDocs.length === 0) {
-        return false;
+        return [];
     }
-    // console.log(rawDocs)
-    const chunks = await Promise.all(
-        rawDocs.map(async (x) => {
-            const chunkedText = await chunksData(x.text);
-            return {
-                url: x.url,
-                title: x.title,
-                chunks: chunkedText
-            }
-        })
-    )
-    return chunks
+
+    const allChunks = [];
+
+    for (const page of rawDocs) {
+        const { url: pageUrl, title, text } = page;
+
+        const chunks = await splitIntoChuncks(text);
+
+        chunks.forEach((chunkText, index) => {
+            allChunks.push({
+                chunkId: `${pageUrl}#chunk_${index}`,
+                parentUrl: pageUrl,
+                pageTitle: title,
+                chunkText,
+            });
+        });
+    }
+
+    return allChunks;
 }
 
-export default getchuckData
+export default getChunkData
