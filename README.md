@@ -194,7 +194,7 @@ The **Q&A Support Bot** is a production-ready AI system that combines web crawli
 
    # MongoDB Configuration
    DB_URL=mongodb+srv://username:password@cluster.mongodb.net
-   DB_NAME=qa_support_bot
+   DB_NAME=Your_DB_NAME
    DB_COLLECTION=embeddings
 
    # ChromaDB Configuration (Optional)
