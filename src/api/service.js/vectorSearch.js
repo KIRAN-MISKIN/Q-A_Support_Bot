@@ -1,7 +1,6 @@
-import {Embedding} from "../../db/models/Embedding.js";
+import { Embedding } from "../../db/models/Embedding.js";
 
 async function vectorSearch(queryVector, limit = 3) {
-    // console.log("Enterred the db search", queryVector.length)
     const result = await Embedding.aggregate([
         {
             $vectorSearch: {
@@ -21,7 +20,6 @@ async function vectorSearch(queryVector, limit = 3) {
             }
         }
     ])
-    // console.log("Done DB search")
     return result
 }
 

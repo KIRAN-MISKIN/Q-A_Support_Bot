@@ -1,11 +1,22 @@
 import agents from "../../agents/index.js";
+import config from "../../config/index.js";
 
 const chatLLM = async (historyString, userQuery, ragData) => {
 
+    if (!historyString) {
+        historyString = [];
+    }
+    if (!userQuery) {
+        userQuery = "";
+    }
+    if (!ragData) {
+        ragData = [];
+    }
+
     const contextChunks = ragData
         .sort((a, b) => b.score - a.score)
-        .filter(item => item.score >= 0.75)
-        .slice(0, 5);
+        .filter(item => item.score >= Number(config.SCORE_THRESHOLD))
+        .slice(0, Number(config.RECORD_LIMIT));
 
     const contextText = contextChunks
         .map((item, i) => `[${i + 1}] ${item.chunkText}`)
@@ -28,11 +39,9 @@ context: ${contextText}
             content: `Question: ${userQuery}`
         }
     ];
-    // console.log(messages, "Messages")
     const response = await agents.llm.invoke(messages);
 
     return response.content;
-    // return "ok"
 };
 
 export default { chatLLM };

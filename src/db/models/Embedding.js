@@ -33,3 +33,4 @@ const embeddingSchema = new mongoose.Schema(
 );
 
 export const Embedding = mongoose.model("Embedding", embeddingSchema);
+
