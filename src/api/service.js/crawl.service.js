@@ -25,7 +25,7 @@ function checkWebsite(url) {
 
 const crawlerService = async (baseUrl) => {
     const url = await checkWebsite(baseUrl)
-    if (!mainurl) {
+    if (!url) {
         return false
     }
     const checking = await DBOperations.findUrlExist(url)
