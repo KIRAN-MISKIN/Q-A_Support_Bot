@@ -21,7 +21,8 @@
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
-- [Features](#-features)
+- [Key Features](#-key-features)
+- [Architecture](#-architecture)
 - [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
@@ -29,6 +30,7 @@
 - [API Reference](#-api-reference)
 - [Project Structure](#-project-structure)
 - [How It Works](#-how-it-works)
+- [Advanced Features](#-advanced-features)
 - [Contributing](#-contributing)
 - [License](#-license)
 - [Author](#-author)
@@ -37,56 +39,101 @@
 
 ## 🌟 Overview
 
-The **Q&A Support Bot** is an advanced AI-powered system that crawls website content, processes it using natural language processing techniques, generates embeddings, and stores them in a vector database. This enables intelligent retrieval of relevant information to answer user queries with high accuracy using Retrieval Augmented Generation (RAG). The bot supports conversational context through thread-based interactions. 
+The **Q&A Support Bot** is a production-ready AI system that combines web crawling, natural language processing, and retrieval augmented generation to create an intelligent question-answering service. It crawls websites, generates semantic embeddings, stores them in MongoDB Atlas vector database, and uses advanced RAG techniques to provide accurate, contextual responses with conversation history support.
+
+### What Makes This Bot Special? 
+
+- 🎯 **Smart Vector Search**: MongoDB Atlas vector search with configurable similarity thresholds
+- 🧠 **Advanced RAG Pipeline**: Optimized retrieval with score-based filtering and context ranking
+- 💬 **Conversational Memory**: Thread-based conversation tracking with full history persistence
+- 🔧 **Highly Configurable**: Environment-based configuration for all LLM and chunking parameters
+- 🛡️ **Production Ready**: Error handling, validation, and security best practices
+- 📊 **Optimized Performance**: Smart chunking with overlap, configurable token limits, and efficient embeddings
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- 🕷️ **Web Crawling**:  Automatically crawls and extracts content from websites
-- 🧹 **Text Cleaning**: Processes and cleans extracted text for optimal embedding generation
-- 🔢 **Embeddings Generation**: Creates semantic embeddings using OpenAI models
-- 💾 **Vector Database**:  Stores embeddings in MongoDB Atlas for efficient similarity search
-- 🤖 **RAG System**:  Implements Retrieval Augmented Generation for accurate responses
-- 💬 **Conversational Context**: Thread-based conversations for contextual follow-up questions
-- 🔄 **Duplicate Detection**: Smart detection of already crawled URLs
-- 🚀 **Express API**: RESTful API for easy integration
-- 🛡️ **Security**:  Enhanced security with Helmet middleware
-- 📊 **Request Logging**: Detailed logging with Morgan
-- 🔄 **CORS Enabled**: Cross-origin resource sharing support
-- 🗄️ **MongoDB Integration**: Persistent data storage
+### Core Capabilities
+- 🕷️ **Intelligent Web Crawling**: Recursively crawls websites with URL validation and duplicate detection
+- 📝 **Smart Text Chunking**: Configurable chunk size and overlap for optimal context preservation
+- 🔢 **OpenAI Embeddings**: High-quality semantic embeddings using configurable OpenAI models
+- 💾 **Vector Database**: MongoDB Atlas vector search with custom index configuration
+- 🤖 **RAG System**: Advanced retrieval with score thresholds and dynamic context assembly
+- 💬 **Conversation Threading**:  Persistent conversation history with thread-based context management
+- 🎛️ **Configurable LLM**: Flexible model selection, temperature control, and token limits
+- 🔍 **Semantic Search**: Vector similarity search with configurable result limits
+- 🛡️ **Error Handling**:  Comprehensive error handling with custom AppError class
+- 📊 **Request Logging**: Detailed logging with Morgan middleware
+
+### Technical Highlights
+- ✅ URL normalization and validation
+- ✅ Duplicate content detection
+- ✅ Score-based result filtering
+- ✅ Context-aware response generation
+- ✅ Conversation state management
+- ✅ ES6 module architecture
+- ✅ RESTful API design
+- ✅ Environment-based configuration
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│   Client    │ ───────▶│  Express API │ ───────▶│   MongoDB   │
+└─────────────┘         └──────────────┘         └─────────────┘
+                              │                          │
+                              ▼                          ▼
+                        ┌──────────┐            ┌──────────────┐
+                        │  OpenAI  │            │ Vector Index │
+                        │ Embeddings│           │  & Storage   │
+                        └──────────┘            └──────────────┘
+                              │                          │
+                              └──────────┬───────────────┘
+                                         ▼
+                              ┌──────────────────┐
+                              │   RAG Pipeline   │
+                              │  + LLM Response  │
+                              └──────────────────┘
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Backend:**
-- Node.js
-- Express.js v5.1.0
-- JavaScript (ES Modules)
+### Backend Framework
+- **Node.js** - JavaScript runtime
+- **Express. js** v5.1.0 - Web application framework
+- **ES6 Modules** - Modern JavaScript module system
 
-**AI/ML:**
-- LangChain v1.1.1
-- @langchain/openai v1.1.3
-- @langchain/core v1.1.0
-- @langchain/textsplitters v1.0.1
+### AI/ML Stack
+- **LangChain** v1.1.1 - LLM orchestration framework
+- **@langchain/openai** v1.1.3 - OpenAI integration
+- **@langchain/core** v1.1.0 - Core LangChain utilities
+- **@langchain/textsplitters** v1.0.1 - Advanced text chunking
 
-**Database:**
-- ChromaDB v3.1.6 (Vector Database)
-- MongoDB v7.0.0
-- Mongoose v9.0.0
+### Database & Vector Search
+- **MongoDB** v7.0.0 - NoSQL database
+- **Mongoose** v9.0.0 - ODM for MongoDB
+- **MongoDB Atlas Vector Search** - Native vector similarity search
+- **ChromaDB** v3.1.6 - Alternative vector database support
 
-**Utilities:**
-- Axios v1.13.2 (HTTP client)
-- Cheerio v1.1.2 (Web scraping)
-- Zod v4.1.13 (Schema validation)
-- Helmet v8.1.0 (Security)
-- Morgan v1.10.1 (Logging)
-- CORS v2.8.5
+### Web Scraping
+- **Axios** v1.13.2 - HTTP client for web requests
+- **Cheerio** v1.1.2 - Fast HTML parsing and manipulation
 
-**Development:**
-- Nodemon v3.1.11
-- Dotenv v17.2.3
+### Utilities & Security
+- **Zod** v4.1.13 - TypeScript-first schema validation
+- **Helmet** v8.1.0 - Security headers middleware
+- **Morgan** v1.10.1 - HTTP request logger
+- **CORS** v2.8.5 - Cross-origin resource sharing
+- **Crypto** (Node.js built-in) - Thread ID generation
+
+### Development
+- **Nodemon** v3.1.11 - Auto-restart development server
+- **Dotenv** v17.2.3 - Environment variable management
 
 ---
 
@@ -94,16 +141,16 @@ The **Q&A Support Bot** is an advanced AI-powered system that crawls website con
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
-- MongoDB Atlas instance
-- OpenAI API key
+- **Node.js** v14+ (v16+ recommended)
+- **npm** or **yarn**
+- **MongoDB Atlas** account with vector search enabled
+- **OpenAI API** key with access to embeddings and chat models
 
-### Steps
+### Installation Steps
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/KIRAN-MISKIN/Q-A_Support_Bot. git
+   git clone https://github.com/KIRAN-MISKIN/Q-A_Support_Bot.git
    cd Q-A_Support_Bot
    ```
 
@@ -112,23 +159,66 @@ The **Q&A Support Bot** is an advanced AI-powered system that crawls website con
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up MongoDB Atlas Vector Index**
+   
+   Create a vector search index named `vector_index` in your MongoDB Atlas collection with the following configuration:
+   ```json
+   {
+     "fields": [
+       {
+         "type": "vector",
+         "path": "embedding",
+         "numDimensions": 1536,
+         "similarity": "cosine"
+       }
+     ]
+   }
+   ```
+
+4. **Configure environment variables**
    
    Create a `.env` file in the root directory:
    ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   MONGODB_URI=your_mongodb_connection_string
+   # Server Configuration
    PORT=8000
+   NODE_ENV=development
+
+   # OpenAI Configuration
+   OPEN_API_KEY=your_openai_api_key_here
+   
+   # LLM Model Settings
+   LLM_MODEL=gpt-4-turbo-preview
+   LLM_TEMPERATURE=0.7
+   LLM_MAX_COMPLETIONTOKEN=500
+   EMBEDDING_MODEL=text-embedding-3-small
+
+   # MongoDB Configuration
+   DB_URL=mongodb+srv://username:password@cluster.mongodb.net
+   DB_NAME=qa_support_bot
+   DB_COLLECTION=embeddings
+
+   # ChromaDB Configuration (Optional)
+   CHROMA_DB_API_KEY=your_chroma_api_key
+   CHROMA_DB_TENANT=default_tenant
+   CHROMA_DB_DATABASE=default_database
+
+   # Chunking Configuration
+   CHUNCK_SIZE=1000
+   CHUNCK_OVERLAP=200
+
+   # RAG Configuration
+   SCORE_THRESHOLD=0.7
+   RECORD_LIMIT=5
    ```
 
-4. **Start the server**
+5. **Start the server**
    
    **Production mode:**
    ```bash
    npm start
    ```
    
-   **Development mode (with auto-reload):**
+   **Development mode (with hot reload):**
    ```bash
    npm run dev
    ```
@@ -137,13 +227,42 @@ The **Q&A Support Bot** is an advanced AI-powered system that crawls website con
 
 ## ⚙️ Configuration
 
-Configure the following environment variables in your `.env` file:
+### Environment Variables Reference
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `OPENAI_API_KEY` | Your OpenAI API key for embeddings and completions | ✅ Yes |
-| `MONGODB_URI` | MongoDB Atlas connection string | ✅ Yes |
-| `PORT` | Server port (default: 8000) | ❌ No |
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `PORT` | Server port | 8000 | ❌ No |
+| `NODE_ENV` | Environment mode | development | ❌ No |
+| `OPEN_API_KEY` | OpenAI API key | - | ✅ Yes |
+| `LLM_MODEL` | OpenAI model for chat | gpt-4-turbo-preview | ✅ Yes |
+| `LLM_TEMPERATURE` | LLM creativity (0-1) | 0.7 | ✅ Yes |
+| `LLM_MAX_COMPLETIONTOKEN` | Max tokens in response | 500 | ✅ Yes |
+| `EMBEDDING_MODEL` | OpenAI embedding model | text-embedding-3-small | ✅ Yes |
+| `DB_URL` | MongoDB connection string | - | ✅ Yes |
+| `DB_NAME` | MongoDB database name | - | ✅ Yes |
+| `DB_COLLECTION` | Collection for embeddings | embeddings | ✅ Yes |
+| `CHUNCK_SIZE` | Text chunk size | 1000 | ✅ Yes |
+| `CHUNCK_OVERLAP` | Overlap between chunks | 200 | ✅ Yes |
+| `SCORE_THRESHOLD` | Min similarity score | 0.7 | ✅ Yes |
+| `RECORD_LIMIT` | Max context chunks | 5 | ✅ Yes |
+
+### Recommended Settings
+
+**For Accuracy (Higher Quality)**:
+```env
+LLM_MODEL=gpt-4-turbo-preview
+LLM_TEMPERATURE=0.3
+SCORE_THRESHOLD=0.8
+RECORD_LIMIT=3
+```
+
+**For Speed (Faster Responses)**:
+```env
+LLM_MODEL=gpt-3.5-turbo
+LLM_TEMPERATURE=0.5
+SCORE_THRESHOLD=0.6
+RECORD_LIMIT=5
+```
 
 ---
 
@@ -342,18 +461,51 @@ Processes user query and generates response using RAG.
 ```
 Q-A_Support_Bot/
 ├── src/
-│   ├── controllers/      # Request handlers
-│   ├── models/          # Database models
-│   ├── routes/          # API routes
-│   ├── services/        # Business logic
-│   ├── utils/           # Helper functions
-│   └── config/          # Configuration files
-├── index.js             # Application entry point
-├── server.js            # Server configuration
-├── package.json         # Project dependencies
-├── .gitignore          # Git ignore rules
-├── LICENSE             # MIT License
-└── README.md           # Project documentation
+│   ├── config/
+│   │   └── index.js                 # Centralized configuration
+│   │
+│   ├── db/
+│   │   ├── db_connection.js         # MongoDB connection setup
+│   │   └── models/
+│   │       ├── Chat.js              # Conversation schema (threadId + messages)
+│   │       └── Embedding.js         # Embedding schema (chunks + vectors)
+│   │
+│   ├── api/
+│   │   ├── router/
+│   │   │   └── router.js            # API routes (/crawl, /ask)
+│   │   ├── controller/
+│   │   │   └── controller.js        # Request handlers
+│   │   ├── service. js/
+│   │   │   ├── crawl.service.js     # Crawling orchestration
+│   │   │   ├── llmPrompts.js        # RAG prompt engineering & LLM invocation
+│   │   │   └── vectorSearch.js      # MongoDB vector search aggregation
+│   │   └── utils/
+│   │       ├── AppError.js          # Custom error class
+│   │       ├── generate.js          # Thread ID generator (crypto)
+│   │       └── responseHandler.js   # Consistent API responses
+│   │
+│   ├── crawling/
+│   │   └── index.js                 # Web scraping logic (Axios + Cheerio)
+│   │
+│   ├── chunking/
+│   │   └── index.js                 # Text splitting with LangChain
+│   │
+│   ├── embeddings/
+│   │   └── index.js                 # OpenAI embedding generation
+│   │
+│   ├── vector storage/
+│   │   └── mongoDB.js               # Database operations (insert, findUrlExist)
+│   │
+│   └── agents/
+│       └── index. js                 # LLM agent initialization
+│
+├── index.js                         # Application entry point
+├── server.js                        # Express server setup
+├── package.json                     # Dependencies and scripts
+├── . env                             # Environment variables
+├── .gitignore                       # Git ignore rules
+├── LICENSE                          # MIT License
+└── README.md                        # This file
 ```
 
 ---
