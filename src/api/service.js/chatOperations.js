@@ -1,6 +1,16 @@
 import Conversation from '../../db/models/Chat.js';
 
 const conversationHistory = async (threadId, userQuery, llmResponse) => {
+  if (!threadId) {
+    throw new Error('threadId is required');
+  }
+  if (!userQuery) {
+    throw new Error('userQuery is required');
+  }
+  if (!llmResponse) {
+    throw new Error('llmResponse is required');
+  }
+
   return Conversation.findOneAndUpdate(
     { threadId },
     {

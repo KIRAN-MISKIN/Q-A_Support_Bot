@@ -4,7 +4,38 @@ import embeddings from '../../embeddings/index.js'
 import DBOperations from '../../vector storage/mongoDB.js'
 import AppError from '../utils/AppError.js'
 
+function checkWebsite(url) {
+    if (!url) return false;
+    if (!url.includes(".")) return false
+
+    let newUrl = url.trim();
+
+    // Add https:// if missing
+    if (!newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
+        newUrl = "https://" + newUrl;
+    }
+
+    // Add trailing slash if missing
+    if (!newUrl.endsWith("/")) {
+        newUrl = newUrl + "/";
+    }
+
+    return newUrl;
+}
+
 const crawlerService = async (baseUrl) => {
+    const url = await checkWebsite(baseUrl)
+    if (!mainurl) {
+        return false
+    }
+    const checking = await DBOperations.findUrlExist(url)
+    if (checking) {
+        console.log("URL already crawled and exists in DB.");
+        return {
+            status: 'exists',
+            message: 'URL already crawled and exists in DB.'
+        }
+    }
     const data = await crawlWebsite(baseUrl);
     if (!data) {
         throw new AppError("Failed to crawl the website. Please check the URL and try again.", 500);
@@ -17,12 +48,6 @@ const crawlerService = async (baseUrl) => {
     }
 
     const chunksData = await chunkData(data)
-    // embedding the chuncks
-    // for (let i = 0; i < chunksData.length; i++) {
-    //     const chunk = chunksData[i];
-    //     const embedding = await embeddings(chunk.chunkText)
-    //     chunk.embedding = embedding;
-    // }
 
     const texts = chunksData.map(c => c.chunkText)
     const vectors = await embeddings.DocumentTextEmbedding(texts)
@@ -32,7 +57,9 @@ const crawlerService = async (baseUrl) => {
     });
     // store in db
     const results = await DBOperations.insertOperation(chunksData);
-
+    if (!results) {
+        throw new AppError("Failed to store data in the database.", 500);
+    }
     return results
 }
 

@@ -5,7 +5,7 @@ const textSplitter = new RecursiveCharacterTextSplitter({
     chunkOverlap: 20,
 });
 
-async function splitIntoChuncks(text) {
+async function splitIntoChunks(text) {
     if (!text || typeof text !== 'string') return [];
     return textSplitter.splitText(text);
 }
@@ -21,7 +21,7 @@ async function getChunkData(rawDocs) {
     for (const page of rawDocs) {
         const { url: pageUrl, title, text } = page;
 
-        const chunks = await splitIntoChuncks(text);
+        const chunks = await splitIntoChunks(text);
 
         chunks.forEach((chunkText, index) => {
             allChunks.push({

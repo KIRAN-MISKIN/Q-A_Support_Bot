@@ -15,7 +15,9 @@ const config = {
     chunck_size:process.env.CHUNCK_SIZE,
     chunck_overlap:process.env.CHUNCK_OVERLAP,
     DB_COLLECTION: process.env.DB_COLLECTION,
-    NODE_ENV:process.env.NODE_ENV
+    NODE_ENV:process.env.NODE_ENV,
+    SCORE_THRESHOLD: process.env.SCORE_THRESHOLD,
+    RECORD_LIMIT:process.env.RECORD_LIMIT
 }
 
 export default config

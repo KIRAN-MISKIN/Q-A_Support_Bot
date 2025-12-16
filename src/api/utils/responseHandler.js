@@ -1,6 +1,6 @@
 const responseHandler = async (res, statusCode, data) => {
-    const StatusCode = parseInt(statusCode)
-    return res.status(StatusCode).json({
+    const status_Code = parseInt(statusCode)
+    return res.status(status_Code).json({
         status: 'success',
         data: data
     });

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import * as cheerio from "cheerio";
-import DBOperations from '../vector storage/mongoDB.js'
 
 const SKIP_PATTERNS = [
     'login',
@@ -17,25 +16,6 @@ const normalizeUrl = (url) => {
     } catch {
         return null;
     }
-}
-
-function checkWebsite(url) {
-    if (!url) return false;
-    if (!url.includes(".")) return false
-
-    let newUrl = url.trim();
-
-    // Add https:// if missing
-    if (!newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
-        newUrl = "https://" + newUrl;
-    }
-
-    // Add trailing slash if missing
-    if (!newUrl.endsWith("/")) {
-        newUrl = newUrl + "/";
-    }
-
-    return newUrl;
 }
 
 const shouldSkip = (url) => {
@@ -98,19 +78,7 @@ const extractMainText = ($) => {
 
 
 async function crawlWebsite(baseUrl, maxDepth = 2, maxPages = 7) {
-    console.log(baseUrl, "got base url")
-    const mainurl = await checkWebsite(baseUrl)
-    if (!mainurl) {
-        return false
-    }
-    const checking = await DBOperations.findUrlExist(mainurl)
-    if (checking) {
-        console.log("URL already crawled and exists in DB.");
-        return {
-            status: 'exists',
-            message: 'URL already crawled and exists in DB.'
-        }
-    }
+    const mainurl = baseUrl
     const baseDomain = new URL(mainurl).hostname;
 
     const visited = new Set();

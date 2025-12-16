@@ -43,7 +43,6 @@ class Controller {
         const history = await messages.llmChatHistory(threadId)
        
         const llmResponse = await llm.chatLLM(history,query,DbSearchResults)
-        // console.log(llmResponse, "llmresponse")
         // checking threadId and DB operations
         if(!threadId){
             const id = await generateThreadId()
