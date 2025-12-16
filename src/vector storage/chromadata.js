@@ -13,7 +13,7 @@ async function getvectorydata(userQuery) {
         })
         return result.documents[0].join('\n')
     } catch (err) {
-        console.error("Error retrieving vector data:", err);
+        // console.error("Error retrieving vector data:", err);
     }
 }
 
@@ -28,6 +28,6 @@ async function updateVectorData(storeData) {
              documents: [storeData.documents],
         })
     } catch (err) {
-        console.error("Error updating vector data:", err);
+        // console.error("Error updating vector data:", err);
     }
 }

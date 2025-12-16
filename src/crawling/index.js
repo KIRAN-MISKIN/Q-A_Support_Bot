@@ -1,55 +1,90 @@
-import axios from 'axios'
-import * as cheerio from "cheerio";
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import DBOperations from '../vector storage/mongoDB.js';
 
 const SKIP_PATTERNS = [
     'login',
     'signup',
     'register',
     'cart',
-    'checkout',
-    'account'
+    'checkout'
 ];
 
+/**
+ * Normalize URL (remove query, hash, etc.)
+ */
 const normalizeUrl = (url) => {
     try {
-        return new URL(url).origin + new URL(url).pathname;
+        const u = new URL(url);
+        return `${u.origin}${u.pathname}`;
     } catch {
         return null;
     }
-}
+};
 
-const shouldSkip = (url) => {
-    return SKIP_PATTERNS.some(word => url.toLowerCase().includes(word));
-}
+/**
+ * Decide whether a URL should be skipped
+ * Skip if:
+ *  - matches skip pattern
+ *  - already exists in DB
+ */
+const shouldSkip = async (url) => {
+    const normalizedUrl = normalizeUrl(url);
+    if (!normalizedUrl) return true;
 
+    // 1. Keyword-based skip
+    const hasSkipPattern = SKIP_PATTERNS.some(word =>
+        normalizedUrl.toLowerCase().includes(word)
+    );
+
+    if (hasSkipPattern) return true;
+
+    // 2. DB duplicate check
+    const existsInDb = Boolean(
+        await DBOperations.findUrlExist(normalizedUrl)
+    );
+
+    return existsInDb;
+};
+
+/**
+ * Crawl a single page
+ */
 async function crawlPage(url, baseDomain) {
     try {
         const { data } = await axios.get(url, {
             timeout: 10000,
             headers: {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120 Safari/537.36",
-                "Accept-Language": "en-US,en;q=0.9"
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9'
             }
         });
-        const $ = cheerio.load(data);
 
+        const $ = cheerio.load(data);
         const title = $('title').text() || 'No title';
 
         const links = [];
+        const linkElements = $('a[href]').toArray();
 
-        $("a[href]").each((i, el) => {
-            const href = $(el).attr("href");
-            if (!href) return;
+        // IMPORTANT: async-safe loop
+        for (const el of linkElements) {
+            const href = $(el).attr('href');
+            if (!href) continue;
 
             try {
                 const absoluteUrl = new URL(href, url).href;
                 const linkDomain = new URL(absoluteUrl).hostname;
 
-                if (linkDomain === baseDomain && !shouldSkip(absoluteUrl)) {
-                    links.push(normalizeUrl(absoluteUrl));
+                if (
+                    linkDomain === baseDomain &&
+                    !(await shouldSkip(absoluteUrl))
+                ) {
+                    const normalized = normalizeUrl(absoluteUrl);
+                    if (normalized) links.push(normalized);
                 }
-            } catch (err) { }
-        });
+            } catch { }
+        }
 
         const cleanText = extractMainText($);
 
@@ -60,37 +95,39 @@ async function crawlPage(url, baseDomain) {
             html: data,
             links: [...new Set(links)]
         };
-
     } catch (err) {
         console.log(`❌ Failed to crawl: ${url}`);
         return null;
     }
 }
 
+/**
+ * Extract readable text from HTML
+ */
 const extractMainText = ($) => {
-    $('script, style, noscript, svg,img').remove()
+    $('script, style, noscript, svg, img').remove();
 
     return $('body')
         .text()
         .replace(/\s+/g, ' ')
         .trim();
-}
+};
 
-
-async function crawlWebsite(baseUrl, maxDepth = 2, maxPages = 7) {
-    const mainurl = baseUrl
-    const baseDomain = new URL(mainurl).hostname;
+/**
+ * Crawl entire website (BFS)
+ */
+async function crawlWebsite(baseUrl, maxDepth = 2, maxPages = 4) {
+    const baseDomain = new URL(baseUrl).hostname;
 
     const visited = new Set();
     const results = [];
-
-    const queue = [{ url: mainurl, depth: 0 }];
+    const queue = [{ url: baseUrl, depth: 0 }];
 
     while (queue.length > 0 && visited.size < maxPages) {
         const { url, depth } = queue.shift();
 
         if (visited.has(url) || depth > maxDepth) continue;
-        if (shouldSkip(url)) continue;
+        if (await shouldSkip(url)) continue;
 
         console.log(`📥 Crawling: ${url}`);
         visited.add(url);
@@ -104,8 +141,7 @@ async function crawlWebsite(baseUrl, maxDepth = 2, maxPages = 7) {
             text: pageData.text
         });
 
-        // Push new links into queue
-        for (let link of pageData.links) {
+        for (const link of pageData.links) {
             if (!visited.has(link)) {
                 queue.push({ url: link, depth: depth + 1 });
             }
@@ -114,4 +150,5 @@ async function crawlWebsite(baseUrl, maxDepth = 2, maxPages = 7) {
 
     return results;
 }
-export default crawlWebsite
+
+export default crawlWebsite;

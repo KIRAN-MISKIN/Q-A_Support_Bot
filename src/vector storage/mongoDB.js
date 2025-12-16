@@ -18,7 +18,7 @@ class DBOperations {
                 message: 'Url data stored successfully in DB'
             }
         } catch(err){
-            console.error('Error inserting embedding:', err);
+            // console.error('Error inserting embedding:', err);
             throw err;
         }
     }
@@ -30,7 +30,7 @@ class DBOperations {
             })
             return findUrldata;
         } catch(err){
-            console.error('Error finding URL:', err);
+            // console.error('Error finding URL:', err);
             throw err;
         }
     }
